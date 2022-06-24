@@ -12,12 +12,14 @@ from operator import itemgetter
 from importlib import import_module
 from collections import deque, defaultdict, OrderedDict
 from torch.utils.data import DataLoader
+from h5py import File
 
 import toml
 import torch
 import koi.lstm
 import parasail
 import numpy as np
+import itertools
 from torch.cuda import get_device_capability
 
 try:
@@ -400,3 +402,27 @@ def poa(groups, max_poa_sequences=100, gpu_mem_per_batch=0.9):
             group_status, seq_status = batch.add_poa_group(group)
 
     return results
+
+
+# Generate all possible sequences of length n
+def generate_all_seq(length, txt_path):
+    bases = ['A', 'T', 'C', 'G']
+    all_seq = [''.join(p) for p in itertools.product(bases, repeat=length)]
+    # write all sequences to a txt file
+    with open(txt_path, 'w') as f:
+        for seq in all_seq:
+            f.write("".join(seq) + "\n")
+
+
+# Replace the raw signals in the template fast5 file with signal values in txt file
+def signal_to_fast5(template_fast5, output_fast5, txt_path):
+    os.system('cp ' + template_fast5 + ' ' + output_fast5)
+    with open(txt_path) as f:
+        data = [int(line) for line in f]
+    with File(output_fast5, 'a') as hf:
+        group = hf.get('Raw/Reads')
+        read_num = list(group.keys())[0]
+        signal_group = group.get(read_num)
+        del signal_group['Signal']
+        signal_group.create_dataset('Signal', data=data)
+        hf.close()
