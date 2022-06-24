@@ -1,7 +1,6 @@
 from random import randrange
 import numpy as np
 import argparse
-import os
 
 
 base_dict = {0: 'A', 1: 'T', 2: 'C', 3: 'G'}
@@ -26,19 +25,17 @@ def generate_random_seq(num=100, mean_length=500, std=0):
     return seqs
 
 
-# Generate a FASTA file containing all sequences
-def generate_fasta(fasta_path, seqs):
-    seq_num = 0
+# Generate FASTA files all in one directory
+def generate_fasta(seqs, dir_path):
 
-    if os.path.exists(fasta_path):
-        os.remove(fasta_path)
-
-    with open(fasta_path, 'a') as f:
-        for i in range(len(seqs)):
-            title_line = '>sequenceID-' + str(seq_num)
+    for i in range(len(seqs)):
+        fasta_path = str(dir_path) + str(i) + '.fasta'
+        print(fasta_path)
+        with open(fasta_path, 'w') as f:
+            title_line = '>sequenceID-' + str(i)
             f.write(title_line + '\n')
-            seq_num += 1
             f.write(seqs[i] + '\n')
+            f.close()
 
 
 if __name__ == '__main__':
@@ -46,7 +43,7 @@ if __name__ == '__main__':
     parser.add_argument('--n', default=100)
     parser.add_argument('--l', default=500)
     parser.add_argument('--std', default=0)
-    parser.add_argument('-o', default='reference.fasta')
+    parser.add_argument('-o', default='reference/')
     args = vars(parser.parse_args())
 
     num = int(args.get('n'))
@@ -54,4 +51,4 @@ if __name__ == '__main__':
     std = int(args.get('std'))
     fasta_path = args.get('o')
     seqs = generate_random_seq(num=num, mean_length=length, std=std)
-    generate_fasta(fasta_path, seqs)
+    generate_fasta(seqs, fasta_path)
