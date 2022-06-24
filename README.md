@@ -44,11 +44,11 @@ bonito basecaller bonito/models/choose_your_model/ taiyaki_walkthrough/reads/ > 
 
 To directly generate comparison result against reference:
 ```
-bonito basecaller bonito/models/choose_your_model/ --reference taiyaki_walkthrough/reference taiyaki_walkthrough/reads/ > basecalls.sam
+bonito basecaller bonito/models/choose_your_model/ --reference taiyaki_walkthrough/reference.fasta taiyaki_walkthrough/reads/ > basecalls.sam
 ```
 
 
-To train your own model or use more advanced features, refer to official [README](https://github.com/sf3518/bonito/blob/master/README.md).
+To train your own model or use more advanced features, refer to official [README](https://github.com/sf3518/bonito/blob/master/bonito_README.md).
 
 
 ### Bonito Trouble Shooting
@@ -58,7 +58,7 @@ You might encounter those errors when setting up Bonito and here are the solutio
 
 * Error with protobuf. A recent release of Bonito might have caused the problem. 
 If you see `Downgrade the protobuf package to 3.20.x or lower.'`, or `Set PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python`
-error messages, you can either downgrade or set environment variable explicitly for protobuf.
+error messages, you can either downgrade protobuf or set environment variable explicitly for protobuf.
 The former solution is preferred, as the latter will slow down training speed significantly.
 To downgrade, run:
 ```
@@ -96,11 +96,11 @@ python3 parse_cigar.py cigar.txt 100
 ## Error Simulation
 First generate the reference FASTA file:
 ```
-python3 error_simulation.py --n 100 --l 500 --std 10 -o reference.fasta
+python3 error_simulation.py --n 100 --l 500 --std 10 -o references/
 ```
 --n specifies the number of sequences, --l specifies the average length of the sequences,
 --std specifies the standard deviation of the sequence lengths, 
--o points to the output file location.
+-o points to the directory to store reference files.
 
 Next we generate FAST5 file with DeepSimulator. Run the following to set up:
 
